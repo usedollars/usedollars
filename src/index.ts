@@ -1,17 +1,26 @@
-import "reflect-metadata"; 
 import express from "express";
-import { AppDataSource } from "./data-source";
-import app from './app';
+import "dotenv/config";
+import cors from "cors";
 
-AppDataSource.initialize()
-  .then(() => {
-    console.log('Base de datos conectada');
-    const PORT = process.env.PORT || 3000;
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en http://localhost:${PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error('Error al conectar la base de datos:', error);
-  });
+const app = express();
+
+// Middlewares
+app.use(cors());
+app.use(express.json());
+
+// Rutas
+app.get("/", (req, res) => {
+  res.send("USEDOLLARS.COM funcionando 🚀");
+});
+
+// Puerto
+const port = process.env.PORT; // Fly requiere usar la variable de entorno PORT
+if (!port) {
+  console.error("ERROR: No se encontró process.env.PORT");
+  process.exit(1); // Sale si no encuentra el puerto
+}
+
+app.listen(port, () => {
+  console.log(`Servidor corriendo en puerto ${port}`);
+});
 
