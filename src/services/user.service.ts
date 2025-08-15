@@ -1,21 +1,39 @@
-import { AppDataSource } from '../data-source';
-import { User } from '../entities/user';
-import { Wallet } from '../entities/wallet';
-import bcrypt from 'bcryptjs';
+import { AppDataSource } from "../config/data-source";
+import { User } from "../entities/user";
+import { Repository } from "typeorm";
 
-const userRepository = AppDataSource.getRepository(User);
+export class UserService {
+  private userRepository: Repository<User>;
 
-export const createUser = async (data: { name: string, email: string, phoneNumber: string, password: string }) => {
-  const hashedPassword = await bcrypt.hash(data.password, 10);
+  constructor() {
+    this.userRepository = AppDataSource.getRepository(User);
+  }
 
-  const user = userRepository.create({
-    ...data,
-    password: hashedPassword,
-    isVerified: false,
-    isActive: true,
-  });
+  async createUser(data: Partial<User>): Promise<User> {
+    const newUser = this.userRepository.create(data);
+    return await this.userRepository.save(newUser);
+  }
 
-  await userRepository.save(user);
-  return user;
-};
+  async findByEmail(email: string): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { email } });
+  }
+
+  async findById(id: number): Promise<User | null> {
+    return await this.userRepository.findOne({ where: { id } });
+  }
+
+  async updateUser(id: number, data: Partial<User>): Promise<User | null> {
+    const user = await this.findById(id);
+    if (!user) return null;
+    Object.assign(user, data);
+    return await this.userRepository.save(user);
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await this.userRepository.delete(id);
+    return result.affected !== 0;
+  }
+}
+
+export default new UserService();
 

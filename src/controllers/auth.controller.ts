@@ -1,34 +1,25 @@
-import { Request, Response } from 'express';
-import { AppDataSource } from '../data-source';
-import { User } from '../entities/user';
-
-const userRepository = AppDataSource.getRepository(User);
+import { Request, Response } from "express";
+import { registerUser, loginUser } from "../services/auth.service";
 
 export const register = async (req: Request, res: Response) => {
-  const { name, email, phoneNumber, password } = req.body;
-
-  const existingUser = await userRepository.findOne({
-    where: [{ email }, { phoneNumber }]
-  });
-
-  if (existingUser) {
-    return res.status(400).json({ message: 'User already exists' });
+  try {
+    const user = await registerUser(req.body);
+    res.status(201).json({ user });
+  } catch (err: any) {
+    if (err.message === "UserExists") return res.status(409).json({ error: "User already exists" });
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
-
-  const user = userRepository.create({
-    name,
-    email,
-    phoneNumber,
-    password,
-    isVerified: false,
-    isActive: true
-  });
-
-  await userRepository.save(user);
-  res.status(201).json(user);
 };
 
 export const login = async (req: Request, res: Response) => {
-  res.send('Login logic here');
+  try {
+    const token = await loginUser(req.body);
+    res.status(200).json({ token });
+  } catch (err: any) {
+    if (err.message === "InvalidCredentials") return res.status(401).json({ error: "Invalid credentials" });
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 

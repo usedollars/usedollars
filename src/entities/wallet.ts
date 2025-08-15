@@ -1,18 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { User } from './user';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { User } from "./user";
 
 @Entity()
 export class Wallet {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
-  @Column()
-  currency!: string;
-
-  @Column('decimal', { precision: 18, scale: 8 })
+  @Column('decimal')
   balance!: number;
 
-  @ManyToOne(() => User, user => user.wallets)
+  @ManyToOne(() => User, (user) => user.wallets)
   user!: User;
 }
-

@@ -1,30 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Wallet } from './wallet';
+import { 
+  Entity, 
+  PrimaryGeneratedColumn, 
+  Column, 
+  OneToMany 
+} from "typeorm";
+import { Wallet } from "./wallet"; // Asegúrate que wallet.ts exista
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn('uuid')
-  id!: string;
+  @PrimaryGeneratedColumn()
+  id!: number;
 
   @Column()
   name!: string;
 
-  @Column({ unique: true })
+  @Column()
   email!: string;
-
-  @Column({ unique: true, nullable: true })
-  phoneNumber!: string;
 
   @Column()
   password!: string;
 
-  @Column({ default: false })
-  isVerified!: boolean;
+  @Column({ nullable: true })
+  phoneNumber?: string;
 
-  @Column({ default: true })
-  isActive!: boolean;
-
-  @OneToMany(() => Wallet, wallet => wallet.user)
+  @OneToMany(() => Wallet, (wallet: Wallet) => wallet.user)
   wallets!: Wallet[];
 }
-

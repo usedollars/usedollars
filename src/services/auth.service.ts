@@ -1,25 +1,28 @@
-import { getRepository } from 'typeorm';
-import { User } from "../entities/user";
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
+import bcrypt from "bcryptjs";
+import { AppDataSource } from "../config/data-source";
+import { User } from "../models/User";
 
-const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+const userRepo = AppDataSource.getRepository(User);
 
-export async function loginUser(email: string, password: string) {
-  const userRepository = getRepository(User);
-  const user = await userRepository.findOne({ where: { email } });
+export const registerUser = async ({ email, password, name }: { email: string; password: string; name: string }) => {
+  const existing = await userRepo.findOneBy({ email });
+  if (existing) throw new Error("UserExists");
 
-  if (!user) throw new Error('Usuario no encontrado');
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const user = userRepo.create({ email, password: hashedPassword, name, isActive: true, isVerified: false });
+  await userRepo.save(user);
+  return { ...user, password: undefined };
+};
 
-  const isPasswordValid = await bcrypt.compare(password, user.password);
-  if (!isPasswordValid) throw new Error('Contraseña incorrecta');
+export const loginUser = async ({ identifier, password }: { identifier: string; password: string }) => {
+  const user = await userRepo.findOneBy({ email: identifier });
+  if (!user) throw new Error("InvalidCredentials");
 
-  const token = jwt.sign(
-    { userId: user.id, email: user.email },
-    JWT_SECRET,
-    { expiresIn: '1h' }
-  );
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) throw new Error("InvalidCredentials");
 
-  return { token, user };
-}
+  // Aquí podrías generar un JWT real
+  const token = "mocked-jwt-token";
+  return token;
+};
 
