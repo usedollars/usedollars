@@ -1,0 +1,73 @@
+<!-- src/public/dashboard.html -->
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Usedollars - Dashboard (Mock)</title>
+  <link rel="stylesheet" href="/css/dashboard.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="logo">USEDOLLARS.COM</div>
+    <div class="welcome" id="welcomeMsg">Bienvenido al sistema, un gusto tenerte por aquí</div>
+  </header>
+
+  <div class="app">
+    <aside class="sidebar" id="sidebar">
+      <nav>
+        <a href="#" data-section="overview" class="active">Inicio</a>
+        <a href="#" data-section="new-transaction">Nueva Transacción</a>
+        <a href="#" data-section="history">Historial</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <section id="overview" class="section visible">
+        <h2>Resumen</h2>
+        <div class="card">
+          <div>Balance total</div>
+          <div class="balance" id="balance">--</div>
+        </div>
+
+        <h3>Transacciones recientes</h3>
+        <ul id="recentTxList" class="tx-list"></ul>
+
+        <button id="openNewTxBtn">+ Nueva Transacción</button>
+      </section>
+
+      <section id="new-transaction" class="section">
+        <h2>Nueva Transacción (botón modal también disponible)</h2>
+        <p>Puedes usar el modal para enviar una transacción rápida.</p>
+      </section>
+
+      <section id="history" class="section">
+        <h2>Historial</h2>
+        <p>Aquí iría la tabla de operaciones.</p>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal Nueva Transacción -->
+  <div id="transactionModal" class="modal" aria-hidden="true">
+    <div class="modal-content">
+      <h3>Nueva Transacción</h3>
+      <form id="txForm">
+        <label>From Wallet ID <input name="fromWalletId" required /></label>
+        <label>To Wallet ID <input name="toWalletId" required /></label>
+        <label>Monto <input name="amount" type="number" step="0.01" required /></label>
+        <label>Moneda <input name="currency" value="USD" /></label>
+        <label>Nota <input name="note" /></label>
+        <div class="modal-actions">
+          <button type="button" id="closeModalBtn">Cancelar</button>
+          <button type="submit">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/dashboard.js"></script>
+</body>
+</html>
+

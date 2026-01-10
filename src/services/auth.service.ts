@@ -1,28 +1,54 @@
+import { User } from "../entities/User";
 import bcrypt from "bcryptjs";
-import { AppDataSource } from "../config/data-source";
-import { User } from "../models/User";
+import { AppDataSource } from "../data-source";
+import { generateToken } from "../utils/jwt";
 
-const userRepo = AppDataSource.getRepository(User);
+export const loginUser = async (email: string, password: string) => {
+  const userRepository = AppDataSource.getRepository(User);
+  const user = await userRepository.findOne({ where: { email } });
 
-export const registerUser = async ({ email, password, name }: { email: string; password: string; name: string }) => {
-  const existing = await userRepo.findOneBy({ email });
-  if (existing) throw new Error("UserExists");
+  if (!user) {
+    throw new Error("Usuario no encontrado");
+  }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const user = userRepo.create({ email, password: hashedPassword, name, isActive: true, isVerified: false });
-  await userRepo.save(user);
-  return { ...user, password: undefined };
+  const isPasswordValid = await bcrypt.compare(password, user.password);
+  if (!isPasswordValid) {
+    throw new Error("Credenciales inválidas");
+  }
+
+  // Generar token JWT
+  const token = generateToken({ 
+    userId: user.id, 
+    email: user.email 
+  });
+
+  return { user, token };
 };
 
-export const loginUser = async ({ identifier, password }: { identifier: string; password: string }) => {
-  const user = await userRepo.findOneBy({ email: identifier });
-  if (!user) throw new Error("InvalidCredentials");
+export const registerUser = async (email: string, password: string, name: string) => {
+  const userRepository = AppDataSource.getRepository(User);
+  const existingUser = await userRepository.findOne({ where: { email } });
 
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) throw new Error("InvalidCredentials");
+  if (existingUser) {
+    throw new Error("El usuario ya existe");
+  }
 
-  // Aquí podrías generar un JWT real
-  const token = "mocked-jwt-token";
-  return token;
+  const hashedPassword = await bcrypt.hash(password, 10);
+
+  const user = userRepository.create({
+    email,
+    password: hashedPassword,
+    name
+  });
+
+  await userRepository.save(user);
+
+  // Generar token JWT para el nuevo usuario
+  const token = generateToken({ 
+    userId: user.id, 
+    email: user.email 
+  });
+
+  return { user, token };
 };
 

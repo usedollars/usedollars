@@ -1,19 +1,13 @@
-import { Router, Request, Response } from 'express';
-import { authenticateJWT } from '../middleware/auth';
+import { Router } from 'express';
+import { getProfile, getDashboard } from '../controllers/user.controller';
+import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
-// Ruta protegida: /api/user/profile
-router.get('/profile', authenticateJWT, (req: Request & { user?: any }, res: Response) => {
-  const user = req.user;
-  res.json({
-    message: `Perfil accedido correctamente`,
-    user: {
-      id: user.userId,
-      email: user.email
-    }
-  });
-});
+// Todas las rutas requieren autenticación
+router.use(authenticateToken);
+
+router.get('/profile', getProfile);
+router.get('/dashboard', getDashboard);
 
 export default router;
-

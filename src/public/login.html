@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>USEDOLLARS - Login</title>
+  <style>
+    body{font-family:system-ui,Segoe UI,Roboto,Helvetica,Arial;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;background:#f6f7fb}
+    .card{width:360px;padding:20px;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,.08);background:white}
+    input{width:100%;padding:10px;margin:8px 0;border-radius:6px;border:1px solid #ddd}
+    button{width:100%;padding:10px;border-radius:6px;border:0;background:#2b8a6b;color:white;font-weight:600}
+    .small{font-size:13px;color:#666;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>$ USEDOLLARS</h2>
+    <form id="loginForm">
+      <label>Email</label>
+      <input id="email" type="email" required />
+      <label>Contraseña</label>
+      <input id="password" type="password" required />
+      <button type="submit">Entrar</button>
+    </form>
+    <div class="small">¿Primera vez? <button id="fakeRegister" style="background:none;border:0;color:#0b6f8e;cursor:pointer">Registrarse</button></div>
+    <div id="msg" class="small"></div>
+  </div>
+
+  <script src="/js/auth.js"></script>
+</body>
+</html>
+

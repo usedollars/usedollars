@@ -1,0 +1,47 @@
+:root {
+  --bg: #f6f7fb;
+  --card: #ffffff;
+  --accent: #206040; /* verde sobrio en lugar de navy */
+  --muted: #666;
+}
+
+* { box-sizing: border-box; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+body { margin:0; background: var(--bg); min-height:100vh; }
+
+/* Confetti sutil con gradientes */
+body::before {
+  content: "";
+  position: fixed; inset: 0; pointer-events: none; z-index: 0;
+  background-image:
+    radial-gradient(circle at 10% 20%, rgba(255,180,180,0.12) 0 6px, transparent 6px),
+    radial-gradient(circle at 80% 40%, rgba(180,220,255,0.08) 0 6px, transparent 6px),
+    radial-gradient(circle at 40% 80%, rgba(200,255,200,0.06) 0 6px, transparent 6px);
+  opacity: 1;
+}
+
+/* Topbar */
+.topbar { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; background:transparent; position:fixed; width:100%; z-index:10; }
+.logo { font-weight:700; letter-spacing: 1px; color: var(--accent); }
+.welcome { color:var(--muted); font-size:0.95rem; }
+
+/* Layout */
+.app { display:flex; padding-top:64px; }
+.sidebar { width:220px; padding:20px; position:fixed; top:64px; left:0; bottom:0; background:transparent; z-index:5; }
+.sidebar nav a { display:block; padding:10px 12px; color:#333; text-decoration:none; border-radius:8px; margin-bottom:6px; }
+.sidebar nav a.active { background: #eef7f0; color: var(--accent); font-weight:600; }
+
+.main { margin-left:240px; padding:28px; flex:1; }
+
+.card { background:var(--card); padding:16px; border-radius:12px; box-shadow: 0 6px 18px rgba(20,20,30,0.04); margin-bottom:16px; }
+.balance { font-size:1.6rem; font-weight:700; color: var(--accent); }
+
+.tx-list { list-style:none; padding:0; margin:0 0 16px 0; }
+.tx-list li { padding:8px 10px; border-radius:8px; background: #fff; margin-bottom:8px; box-shadow: 0 2px 6px rgba(20,20,30,0.03); }
+
+/* Modal */
+.modal { position:fixed; inset:0; display:none; justify-content:center; align-items:center; background: rgba(0,0,0,0.35); z-index:50; }
+.modal[aria-hidden="false"]{ display:flex; }
+.modal-content { width:420px; background:#fff; padding:18px; border-radius:10px; box-shadow: 0 12px 40px rgba(10,10,20,0.2); }
+.modal-content form label { display:block; margin:8px 0; font-size:0.9rem; color:#333; }
+.modal-actions { display:flex; justify-content:flex-end; gap:8px; margin-top:12px; }
+

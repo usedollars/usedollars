@@ -15,3 +15,6 @@ image = 'node:16-bullseye'
   cpu_kind = 'shared'
   cpus = 1
 
+# Forzar que Fly ejecute npm start
+cmd = ["npm", "start"]
+

@@ -1,46 +1,33 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+import { verifyToken, JwtPayload } from '../utils/jwt';
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: {
-        userId: string;
-        email: string;
-        iat: number;
-        exp: number;
-      };
-    }
-  }
+export interface AuthenticatedRequest extends Request {
+  user?: JwtPayload;
 }
 
-export const authenticateJWT = (
-  req: Request,
+export const authenticateToken = (
+  req: AuthenticatedRequest,
   res: Response,
   next: NextFunction
-) => {
-  const authHeader = req.headers.authorization;
+): void => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    return res
-      .status(401)
-      .json({ error: 'Token no proporcionado o inválido' });
+  console.log('Authorization header:', authHeader); // Para debug
+  console.log('Extracted token:', token); // Para debug
+
+  if (!token) {
+    res.status(401).json({ error: 'Token de acceso requerido' });
+    return;
   }
-
-  const token = authHeader.split(' ')[1];
 
   try {
-    const secret = process.env.JWT_SECRET || 'default_secret';
-    const decoded = jwt.verify(token, secret) as {
-      userId: string;
-      email: string;
-      iat: number;
-      exp: number;
-    };
+    const decoded = verifyToken(token);
+    console.log('Decoded token:', decoded); // Para debug
     req.user = decoded;
     next();
-  } catch (err) {
-    return res.status(403).json({ error: 'Token inválido o expirado' });
+  } catch (error) {
+    console.log('Token verification error:', error); // Para debug
+    res.status(403).json({ error: 'Token inválido o expirado' });
   }
-};
-
+}

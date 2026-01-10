@@ -2,9 +2,6 @@ import { Router } from 'express';
 import { WalletController } from '../controllers/wallet.controller';
 import { authMiddleware } from '../middlewares/auth.middleware';
 
-console.log('Cargando rutas de wallet...');
-console.log('Métodos disponibles en WalletController:', Object.keys(WalletController));
-
 const router = Router();
 
 router.get('/me', authMiddleware, WalletController.getMyWallets);

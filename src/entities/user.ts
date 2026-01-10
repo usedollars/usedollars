@@ -1,28 +1,36 @@
+// src/entities/User.ts
+
 import { 
   Entity, 
   PrimaryGeneratedColumn, 
   Column, 
-  OneToMany 
+  OneToMany, 
+  CreateDateColumn, 
+  UpdateDateColumn 
 } from "typeorm";
-import { Wallet } from "./wallet"; // Asegúrate que wallet.ts exista
+import { Wallet } from "./Wallet";
 
-@Entity()
+@Entity({ name: "users" })  // apunta a la tabla "users"
 export class User {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column({ unique: true })
+  email!: string;
 
   @Column()
   name!: string;
 
   @Column()
-  email!: string;
+  password!: string;  // se guarda la contraseña encriptada
 
-  @Column()
-  password!: string;
-
-  @Column({ nullable: true })
-  phoneNumber?: string;
-
-  @OneToMany(() => Wallet, (wallet: Wallet) => wallet.user)
+  @OneToMany(() => Wallet, wallet => wallet.user)
   wallets!: Wallet[];
+
+  @CreateDateColumn()
+  createdAt!: Date;
+
+  @UpdateDateColumn()
+  updatedAt!: Date;
 }
+
