@@ -2,62 +2,52 @@ import express from "express";
 import path from "path";
 import cors from "cors";
 import dotenv from "dotenv";
-import jwt from "jsonwebtoken";
 
-import authRoutes from "./routes/auth.routes";
-import transactionRoutes from "./routes/transactionRoutes";
-import userRoutes from "./routes/user.routes";
-import walletRoutes from "./routes/wallet.routes";
+// --- IMPORTS DE RUTAS ---
+import authRoutes from "./routes/auth.routes"; 
+import { transactionRouter } from "./routes/transactionRoutes"; // 👈 Importación nombrada
+import userRoutes from "./routes/user.routes"; 
+import { walletRouter } from "./routes/wallet.routes"; 
 
 dotenv.config();
 
 const app = express();
 
-// --- Middlewares ---
-app.use(cors());
+// --- CONFIGURACIÓN DE MIDDLEWARES ---
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
 app.use(express.json());
 
-// --- Servir archivos estáticos ---
+// --- SERVIR ARCHIVOS ESTÁTICOS ---
 app.use("/", express.static(path.join(__dirname, "public")));
 app.use("/js", express.static(path.join(__dirname, "public/js")));
 
-// --- Rutas ---
+// --- RUTAS DE LA API ---
 app.use("/api/auth", authRoutes);
-app.use("/api/transactions", transactionRoutes);
+app.use("/transactions", transactionRouter); // Montado en /transactions
 app.use("/api/users", userRoutes);
-app.use("/api/wallets", walletRoutes);
+app.use("/wallets", walletRouter); 
 
-// --- JWT Config ---
-const JWT_SECRET = process.env.JWT_SECRET || "change_this_secret_key";
+// --- ENDPOINT DE SALUD ---
+app.get("/", (req, res) => {
+    res.json({ 
+        status: "Online", 
+        service: "UseDollars API",
+        time: new Date().toISOString()
+    });
+});
 
-function verifyToken(req: any, res: any, next: any) {
-  const header = req.headers["authorization"];
-  if (!header) return res.status(401).json({ error: "No token provided" });
-
-  const token = header.split(" ")[1];
-  try {
-    (req as any).user = jwt.verify(token, JWT_SECRET);
-    next();
-  } catch (e) {
-    return res.status(401).json({ error: "Invalid token" });
+// Log para verificar que las rutas se cargaron
+console.log('Rutas registradas:');
+app._router.stack.forEach((layer: any) => {
+  if (layer.route) {
+    console.log(`${Object.keys(layer.route.methods)} ${layer.route.path}`);
+  } else if (layer.name === 'router') {
+    console.log(`Router montado en: ${layer.regexp}`);
   }
-}
-
-// --- Endpoint de prueba /api/dashboard ---
-app.get("/api/dashboard", verifyToken, (req, res) => {
-  return res.json({
-    user: { id: (req as any).user.id, name: (req as any).user.name },
-    usdt: { value: 36.5, country: "Venezuela" },
-    balance: 33000,
-    transactionsCount: 33,
-    counterparties: 13,
-    rating: "4.9/5",
-    transactions: [
-      { id: "#TX-7841", date: "22 Jul 2025", counterparty: "Carlos M.", amount: 125 },
-      { id: "#TX-7840", date: "21 Jul 2025", counterparty: "Ana R.", amount: 139 },
-    ],
-  });
 });
 
 export default app;
-

@@ -1,12 +1,16 @@
 import { Router } from 'express';
 import { WalletController } from '../controllers/wallet.controller';
-import { authMiddleware } from '../middlewares/auth.middleware';
+
+// 👇 CAMBIO: Agregué la 's' en 'middlewares'
+import { verifyToken } from '../middlewares/auth.middleware'; 
 
 const router = Router();
 
-router.get('/me', authMiddleware, WalletController.getMyWallets);
-router.post('/create', authMiddleware, WalletController.createWallet);
-router.post('/transfer', authMiddleware, WalletController.transfer);
+// Bloqueamos todas las rutas con el token
+router.use(verifyToken);
 
-export default router;
+router.get('/me', WalletController.getMyWallets);
+router.post('/create', WalletController.createWallet);
+router.post('/transfer', WalletController.transfer);
 
+export const walletRouter = router;

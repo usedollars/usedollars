@@ -1,11 +1,10 @@
 import { Router } from "express";
-import { verifyToken } from "../middleware/auth.middleware"; 
+import { verifyToken } from "../middlewares/auth.middleware"; 
+import { DashboardController } from "../controllers/dashboard.controller"; // Importa el nuevo controlador
 
 const router = Router();
 
-router.get("/dashboard", verifyToken, (req, res) => {
-  res.json({ message: `Bienvenido al dashboard, usuario ${(req as any).userId}` });
-});
+// Ahora la ruta es limpia: no necesita ID en la URL porque viene en el Token
+router.get("/summary", verifyToken, DashboardController.getDashboardData);
 
 export default router;
-

@@ -1,8 +1,8 @@
 const sequelize = require('./config/database');
-const Wallet = require('./models/Wallet');
-const Transaction = require('./models/Transaction');
+const Wallet = require('./entities/Wallet');
+const Transaction = require('./entities/Transaction');
 
-async function syncModels() {
+async function syncentities() {
   try {
     await sequelize.authenticate();
     console.log('✅ Conexión a la base de datos establecida.');
@@ -21,4 +21,4 @@ async function syncModels() {
   }
 }
 
-syncModels();
+syncentities();

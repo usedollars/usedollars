@@ -1,0 +1,120 @@
+### 1. Registrar al DESTINATARIO (Juan)
+# Ejecuta esto primero para que no te salga "Destinatario no encontrado"
+POST http://localhost:4001/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "juan@gmail.com",
+  "password": "password123",
+  "name": "Juan Perez"
+}
+
+### 2. Crear Billetera (Wallet) para TU usuario (Elon)
+# Esto asegura que tengas una cuenta en USD para enviar dinero
+POST http://localhost:4001/api/wallets/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzY4OTI1NzgyLCJleHAiOjE3Njg5MjkzODJ9.mIEU6IdZ4FgX-M16m7rLWFGZl9JoQkHAMtt_luOypJA
+
+{
+  "currency": "USD"
+}
+
+### 3. Transferir dinero a Juan
+# Aquí probamos si el saldo baja y si le llega a Juan
+POST http://localhost:4001/api/wallets/transfer
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiaWF0IjoxNzY4NjA0MDQxLCJleHAiOjE3Njg2MDc2NDF9.ko5n_m6wsHgJuRS6gF1yjxcgj1rr_pkQVNnhekSxQMI
+
+{
+  "toUserEmail": "juan@gmail.com", 
+  "amount": 50,
+  "currency": "USD"
+}
+
+### ---------------------------------------------------
+### EXTRAS (Por si necesitas loguearte de nuevo)
+### ---------------------------------------------------
+
+### Registrar a Elon (Tu usuario actual)
+POST http://localhost:4001/api/auth/register
+Content-Type: application/json
+
+{
+  "email": "emart@gmail.com",
+  "password": "password1234",
+  "name": "Elon Martinez"
+}
+
+### Login de Elon (Para generar nuevo token si el otro expira)
+POST http://localhost:4001/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "emart@gmail.com",
+  "password": "password1234"
+}
+
+### Prueba 1: Enviar Dinero (Rico -> Pobre)
+POST http://localhost:4001/api/transactions/internal-send
+Content-Type: application/json
+
+{
+  "senderId": 1,
+  "receiverEmail": "pobre@test.com",
+  "amount": 50,
+  "assetType": "usdt"
+}
+
+### 1. REGISTRAR USUARIO A (EL EMISOR)
+POST http://localhost:4001/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Juan Emisor",
+    "email": "juan@example.com",
+    "password": "password123",
+    "regionId": "DO"
+}
+
+### 2. REGISTRAR USUARIO B (EL RECEPTOR)
+POST http://localhost:4001/api/auth/register
+Content-Type: application/json
+
+{
+    "name": "Pedro Receptor",
+    "email": "pedro@example.com",
+    "password": "password123",
+    "regionId": "DO"
+}
+
+### 3. LOGIN DE JUAN (PARA OBTENER EL TOKEN)
+# @name login
+POST http://localhost:4001/api/auth/login
+Content-Type: application/json
+
+{
+    "email": "juan@example.com",
+    "password": "password123"
+}
+
+### GUARDAR EL TOKEN EN UNA VARIABLE
+@token = {{login.response.body.token}}
+@juanId = {{login.response.body.user.id}}
+
+### 4. VER DASHBOARD INICIAL DE JUAN (DEBE ESTAR EN 0)
+GET http://localhost:4001/api/dashboard/summary
+Authorization: Bearer {{token}}
+
+### 5. TRANSFERENCIA INTERNA (JUAN ENVÍA A PEDRO)
+# Nota: Primero asegúrate de haberle dado saldo a Juan manualmente en la DB 
+# o crea una ruta de 'deposit' para probar.
+POST http://localhost:4001/api/transactions/internal-send
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+    "senderId": "{{juanId}}",
+    "receiverEmail": "pedro@example.com",
+    "amount": 100,
+    "assetType": "USDT"
+}

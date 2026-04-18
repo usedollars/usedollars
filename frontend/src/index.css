@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body { 
+    @apply antialiased bg-[#0b0e11] text-white;
+    font-family: 'Inter', sans-serif; 
+    overflow-x: hidden; 
+}
+
+/* --- TICKER INFINITO ORIGINAL --- */
+.ticker-wrap { 
+    width: 100%; overflow: hidden; background-color: #181a20; 
+    border-bottom: 1px solid #2b3139; height: 40px; position: relative; z-index: 50; 
+}
+.ticker-track {
+    display: flex; width: max-content;
+    animation: scroll 40s linear infinite;
+}
+.ticker-content {
+    display: flex; align-items: center; gap: 3rem; padding-right: 3rem;
+}
+.ticker-item { 
+    white-space: nowrap; font-size: 0.75rem; font-weight: 600; color: #b7bdc6; 
+    display: flex; align-items: center;
+}
+.ticker-item span { font-family: 'Courier New', Courier, monospace; letter-spacing: -0.5px; margin-left: 5px; }
+
+@keyframes scroll { 
+    0% { transform: translateX(0); } 
+    100% { transform: translateX(-50%); } 
+}
+
+/* --- ESTÉTICA PREMIUM (Glow & Cards) --- */
+.glow-text { text-shadow: 0 0 30px rgba(34, 197, 94, 0.4); }
+
+.feature-card {
+    background: #181a20; border: 1px solid #2b3139;
+    @apply transition-all duration-300 rounded-2xl;
+}
+.feature-card:hover {
+    border-color: #3b82f6; transform: translateY(-5px);
+    box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.15);
+}
+
+.flow-line {
+    position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: #2b3139; z-index: 0;
+}
+@media (min-width: 768px) {
+    .flow-line { left: 0; right: 0; top: 50%; width: 100%; height: 2px; bottom: auto; }
+}

@@ -1,34 +1,34 @@
-import { 
-  Entity, 
-  PrimaryGeneratedColumn, 
-  Column, 
-  ManyToOne, 
-  CreateDateColumn, 
-  UpdateDateColumn 
-} from "typeorm";
-import { User } from "./User";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, CreateDateColumn, UpdateDateColumn } from "typeorm";
+import { User } from "./user"; 
 
-@Entity({ name: "wallets" })
+@Entity("wallets")
 export class Wallet {
   @PrimaryGeneratedColumn()
   id!: number;
 
-  @Column({ type: "varchar", length: 10 })
-  currency!: string; // Ej: "USDT", "USD", "BTC"
+  @Column()
+  currency!: string; // usdt, btc, etc.
 
-  @Column({ type: "varchar", unique: true })
-  address!: string; // Dirección única de billetera interna (por ejemplo "usd_genesis33")
+  @Column({ unique: true })
+  address!: string; // Dirección única de la billetera
 
-  @Column({ type: "decimal", precision: 18, scale: 2, default: 0 })
-  balance!: number; // Balance real del usuario
+  // Usamos 'decimal' con alta precisión (escala 8 es perfecta para cripto como BTC)
+  @Column("decimal", { precision: 20, scale: 8, default: 0 })
+  balance!: number;
 
-  @ManyToOne(() => User, user => user.wallets)
+  @Column("decimal", { precision: 20, scale: 8, default: 0 })
+  locked_balance!: number; // Fondos congelados en Escrow
+
+  // --- RELACIONES ---
+  // [CORRECCIÓN]: Eliminamos el (user) => user.wallets para evitar el crash de TypeORM
+  @ManyToOne(() => User)
+  @JoinColumn({ name: "user_id" })
   user!: User;
 
-  @CreateDateColumn()
-  createdAt!: Date;
+  // --- FECHAS ---
+  @CreateDateColumn({ type: "timestamp" })
+  created_at!: Date;
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+  @UpdateDateColumn({ type: "timestamp" })
+  updated_at!: Date;
 }
-

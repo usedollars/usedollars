@@ -11,7 +11,7 @@ middleware
 middlewares
 migrations
 mock-server.ts
-models
+entities
 public
 routes
 server.ts
@@ -49,7 +49,7 @@ validation.middleware.ts
 
 src/migrations:
 
-src/models:
+src/entities:
 User.ts
 
 src/public:
